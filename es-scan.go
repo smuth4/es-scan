@@ -26,7 +26,7 @@ func send(file EsFileInfo, host string) error {
 		return err
 	}
 	url := fmt.Sprintf("http://%s:9200/filesystem/file/%d", host, file.Inode) 
-	resp, err := http.Post(url, "applicate/json",
+	resp, err := http.Post(url, "application/json",
 		strings.NewReader(string(filejson)))
 	if err != nil {
 		fmt.Println("Error posting data: ", err)
