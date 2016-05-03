@@ -46,13 +46,13 @@ func scan(path string) <-chan EsFileInfo {
 	go func() {
 		defer close(ch)
 		filepath.Walk(path, func(path string, f os.FileInfo, error error) error {
-			if (f.IsDir()) { // I don't care about you, directories
+			if (f.IsDir()) { // I don't care about directories
 				return nil
 			}
 			if error != nil {
 				fmt.Printf("Error getting file: %s\n", error)
 			}
-			stat, ok := f.Sys().(*syscall.Stat_t)
+			stat, ok := f.Sys().(*syscall.Stat_t) // Type assertion
 			if !ok {
 				fmt.Println("Error getting file stat")
 				return nil
@@ -70,9 +70,13 @@ func scan(path string) <-chan EsFileInfo {
 	return ch
 }
 
+// TODO: Use the bulk API
 func sendAll(ch <-chan EsFileInfo, host string) error {
 	for f := range ch {
-		send(f, host)
+		err := send(f, host)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
